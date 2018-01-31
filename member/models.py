@@ -5,8 +5,8 @@ from django.db import models
 
 name_regex = RegexValidator(regex=r'^[가-힣a-zA-Z]{2,20}',
                             message='이름은 특수문자를 제외한 2자리 이상 20자리 이하로 작성하여야합니다.')
-phone_regex = RegexValidator(regex=r'^01([0|1|6|7|8|9]?)-?([0-9]{3,4})-?([0-9]{4})$',
-                             message="전화번호는 '010-1234-5678'혹은 '01012345678'형태로 입력하여야 합니다.")
+phone_regex = RegexValidator(regex=r'^0([0-9]{1,2})-?([0-9]{3,4})-?([0-9]{4})$',
+                             message="전화번호는 '010-1234-5678','01012345678','02-1234-5678', '0212345678' 형식으로 입력하여야 합니다.")
 
 
 class CustomUserManager(BaseUserManager):
@@ -41,8 +41,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-
-
 
     USERNAME_FIELD = 'user_id'
     REQUIRED_FIELDS = [
