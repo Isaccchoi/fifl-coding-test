@@ -18,24 +18,27 @@ class UserChangeForm(forms.ModelForm):
         model = User
         fields = ('user_id', 'password', 'name', 'is_admin')
 
+    def clean_password(self):
+        return self.initial["password"]
+
 
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
-    list_display = ('user_id', 'name', 'phone_number', 'is_admin')
+    list_display = ('user_id', 'name', 'phone_number', 'is_admin', 'crossfit_center')
     list_filter = ('is_active', 'is_admin',)
     fieldsets = (
         (None, {'fields': ('user_id', 'password')}),
-        ('Personal info', {'fields': ('name', 'phone_number')}),
+        ('Personal info', {'fields': ('name', 'phone_number', 'crossfit_center')}),
         ('Permissions', {'fields': ('is_active', 'is_admin')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('user_id', 'name', 'phone_number', 'password1', 'password2')}
+            'fields': ('user_id', 'name', 'phone_number', 'crossfit_center', 'password1', 'password2')}
          ),
     )
     search_fields = ('user_id',)
-    ordering = ('user_id',)
+    ordering = ('-pk',)
     filter_horizontal = ()
 
 

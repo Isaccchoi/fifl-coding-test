@@ -3,6 +3,8 @@ from django.contrib.auth.models import PermissionsMixin
 from django.core.validators import RegexValidator
 from django.db import models
 
+from crossfit.models import Center, WorkOutRecord
+
 name_regex = RegexValidator(regex=r'^[가-힣a-zA-Z]{2,20}',
                             message='이름은 특수문자를 제외한 2자리 이상 20자리 이하로 작성하여야합니다.')
 phone_regex = RegexValidator(regex=r'^0([0-9]{1,2})-?([0-9]{3,4})-?([0-9]{4})$',
@@ -10,25 +12,14 @@ phone_regex = RegexValidator(regex=r'^0([0-9]{1,2})-?([0-9]{3,4})-?([0-9]{4})$',
 
 
 class CustomUserManager(BaseUserManager):
-    use_in_migrations = True
-
-    def _create_user(self, user_id, password, **extra_fields):
+    def create_user(self, user_id, password=None, **extra_fields):
         user = self.model(user_id=user_id, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_user(self, user_id, password=None, **extra_fields):
-        extra_fields.setdefault('is_superuser', False)
-        return self._create_user(user_id, password, **extra_fields)
-
     def create_superuser(self, user_id, password, **extra_fields):
-        extra_fields.setdefault('is_superuser', True)
-
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
-
-        user = self._create_user(user_id, password, **extra_fields)
+        user = self.create_user(user_id, password, **extra_fields)
         user.is_admin = True
         user.save()
         return user
@@ -41,6 +32,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+
+    crossfit_center = models.ForeignKey(Center, blank=True, null=True, on_delete=models.SET_NULL)
 
     USERNAME_FIELD = 'user_id'
     REQUIRED_FIELDS = [

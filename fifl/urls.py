@@ -16,6 +16,9 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from crossfit import views
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^ranking/', views.Ranking.as_view(), name='ranking'),
 ]

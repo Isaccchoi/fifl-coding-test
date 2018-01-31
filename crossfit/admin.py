@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Center, WorkOutRecord
+
+admin.site.register(Center)
+admin.site.register(WorkOutRecord)
