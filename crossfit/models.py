@@ -45,26 +45,20 @@ class WorkOutRecord(models.Model):
 
     @classmethod
     def get_rank(cls, workout):
-        # 같은 user를 걸러내기 위해 user_id로 순서로 쿼리셋을 배열함
-        record = WorkOutRecord.objects.filter(workout_name=workout).order_by('user_id')
+        record = cls.objects.filter(workout_name=workout).order_by('user_id', 'record_time')
 
         new_record = list(record)
         for i, rec in enumerate(new_record):
             if i != 0:
                 if rec.user_id == new_record[i - 1].user_id:
-                    if rec.record_time < new_record[i - 1].record_time:
-                        del new_record[i-1]
-                    else:
-                        del new_record[i]
+                    del new_record[i]
+
         sorted_result = sorted(new_record, key=operator.attrgetter('record_time'))
 
         for i, rec in enumerate(sorted_result):
-            if i == 0:
-                rec.rank = 1
-            else:
-                if rec.record_time == sorted_result[i - 1].record_time:
-                    rec.rank = sorted_result[i - 1].rank
-                else:
-                    rec.rank += (i + 1)
+            if rec.record_time == sorted_result[i - 1].record_time:
+                rec.rank = sorted_result[i - 1].rank
+                continue
+            rec.rank = i + 1
 
         return sorted_result
