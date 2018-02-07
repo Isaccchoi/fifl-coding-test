@@ -29,8 +29,6 @@ class WorkOutRecord(models.Model):
     record_time = models.TimeField()
     created_date = models.DateTimeField(auto_now_add=True)
 
-    rank = int()
-
     def __str__(self):
         return f'{self.user.user_id} - {self.workout_name} - {self.record_time}'
 
@@ -56,9 +54,12 @@ class WorkOutRecord(models.Model):
         sorted_result = sorted(new_record, key=operator.attrgetter('record_time'))
 
         for i, rec in enumerate(sorted_result):
-            if rec.record_time == sorted_result[i - 1].record_time:
-                rec.rank = sorted_result[i - 1].rank
+            if i == 0:
+                setattr(rec, 'rank', 1)
                 continue
-            rec.rank = i + 1
+            if rec.record_time == sorted_result[i - 1].record_time:
+                setattr(rec, 'rank', sorted_result[i-1].rank)
+                continue
+            setattr(rec, 'rank', i + 1)
 
         return sorted_result
